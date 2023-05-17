@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo Tracker</title>
+    <style>
+      body {
+        padding: 15px;
+        background-color: #666;
+        font-family: sans-serif;
+      }
+      #title {
+        padding: 10px;
+        font-size: 36px;
+        border: 2px solid #fff;
+        width: 250px;
+      }
+      #todo-header {
+        font-size: 24px;
+      }
+      ul {
+        list-style: none;
+        padding-left: 0;
+        width: 250px;
+      }
+      li {
+        color: #fff;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body style="background-color: #666">
+    <h1 id="title">Todo Tracker</h1>
+
+    <form>
+      <!-- required stops the form from being submitted if empty -->
+      <input type="text" id="user-todo" placeholder="New Todo" required />
+    </form>
+
+    <h2 id="todo-header">Todos</h2>
+
+    <ul></ul>
+
+    <button id="clear">Clear All</button>
+
+    <script>
+      // vars to target the form, ul, button and input
+      var form = document.querySelector("form");
+      var todosList = document.querySelector("ul");
+      var button = document.querySelector("button");
+      var input = document.getElementById("user-todo");
+
+      // todosArray to hold todos, checks localStorage for an existing array and if empty creates and empty array
+      // var todosArray = [];
+      var todosArray = localStorage.getItem("todos")
+        ? JSON.parse(localStorage.getItem("todos"))
+        : [];
+
+      // use localStorage setItem to set todos to string with JSON.stringify which allows us to save string to localStorage
+      localStorage.setItem("todos", JSON.stringify(todosArray));
+
+      // declare variable storage that contains all info in localStorage
+      // use JSON.parse to convert the string from localStorage into JS object
+      var storage = JSON.parse(localStorage.getItem("todos"));
+
+      // attach event listener to form to capture user input on submit event, empty input box after
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        //push onto todosArray the input.value
+        todosArray.push(input.value);
+        // on localStorage now use setItem for key todos using JSON.stringify
+        localStorage.setItem("todos", JSON.stringify(todosArray));
+        todoMaker(input.value);
+        input.value = "";
+      });
+
+      // create 'li' with text from user from their form and append it to 'ul'
+      var todoMaker = function (text) {
+        var todo = document.createElement("li");
+        todo.textContent = text;
+        todosList.appendChild(todo);
+      };
+
+      // loop through localStorage when user first navigates to page and run todoMaker to print array
+      for (var i = 0; i < storage.length; i++) {
+        todoMaker(storage[i]);
+      }
+
+      // attach event listener to clear all listening for a click, clear localStorage so array is empty
+      button.addEventListener("click", function () {
+        localStorage.clear();
+        while (todosList.firstChild) {
+          todosList.removeChild(todosList.firstChild);
+        }
+      });
+    </script>
+  </body>
+</html>
